@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="VISTA 网页 Dock 原型" />
+    <title>VISTA - 网页 Dock</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#dock" aria-label="VISTA 首页"><span class="brand-mark">V</span><span>VISTA</span></a>
+        <nav class="main-nav">
+          <button class="nav-item is-active" type="button" data-filter="all"><span class="nav-icon">&#9670;</span>我的 Dock</button>
+          <button class="nav-item" type="button" data-filter="frequent"><span class="nav-icon">&#9679;</span>高频访问</button>
+          <button class="nav-item" type="button" data-filter="recent"><span class="nav-icon">&#8635;</span>最近打开</button>
+          <button class="nav-item" type="button" data-filter="quiet"><span class="nav-icon">&#8728;</span>待整理 <em id="quiet-count">4</em></button>
+        </nav>
+        <section class="collection-nav" aria-labelledby="collection-label">
+          <div class="section-label"><span id="collection-label">我的分组</span><button type="button" class="plain-button" id="add-group" aria-label="新建分组">+</button></div>
+          <div id="group-nav" class="group-nav"></div>
+        </section>
+        <div class="sidebar-foot"><span class="sync-dot"></span>已保存在本地</div>
+      </aside>
+
+      <main class="workspace" id="dock">
+        <div id="workspace-background" aria-hidden="true"><img id="workspace-background-image" alt="" /></div>
+        <canvas id="flow-canvas" aria-hidden="true"></canvas>
+        <header class="topbar">
+          <div class="workspace-title-block">
+            <p class="eyebrow">PERSONAL WEB SPACE</p>
+            <div class="workspace-title-row">
+              <h1 id="workspace-title">我的网页工作空间</h1>
+              <button class="workspace-name-edit" type="button" id="edit-workspace-name" aria-label="编辑工作台名称" title="编辑工作台名称">编辑</button>
+            </div>
+          </div>
+          <div class="top-actions">
+            <button class="extension-action" type="button" id="import-bookmarks" hidden>导入书签</button>
+            <button class="flow-toggle" type="button" id="toggle-flow" aria-pressed="true">流态背景</button>
+            <button class="background-trigger" type="button" id="open-background">背景</button>
+            <button class="edit-trigger" type="button" id="toggle-edit" aria-pressed="false">整理</button>
+            <button class="command-trigger" type="button" id="open-command" aria-label="打开命令面板"><kbd>⌘</kbd>K</button>
+            <button class="primary-button" type="button" id="open-add">收集网页 <span>+</span></button>
+          </div>
+        </header>
+
+        <section class="intro-row" aria-label="概览">
+          <div class="intro-copy">
+            <p>先收集，再归位。把眼前的网页放进收件箱，等需要时拖进具体任务空间。</p>
+          </div>
+          <div class="week-meter" aria-label="本周浏览时间">
+            <span class="meter-label">本周浏览</span>
+            <strong id="week-browse">0<span>h</span> 0<span>m</span></strong>
+            <div class="meter-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </section>
+
+        <section class="continue-work" aria-labelledby="continue-title">
+          <div class="continue-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2 id="continue-title">继续上次工作</h2></div><p id="continue-context"></p></div>
+          <div class="continue-sites" id="continue-sites"></div>
+          <button class="continue-open" type="button" id="continue-open">恢复这组网页 <span>↗</span></button>
+        </section>
+
+        <section class="tool-row" aria-label="网页筛选和搜索">
+          <div class="view-tabs" role="tablist" aria-label="展示方式">
+            <button class="tab is-selected" type="button" data-view="dock">Dock</button>
+            <button class="tab" type="button" data-view="focus">专注</button>
+            <button class="tab" type="button" data-view="timeline">时间轴</button>
+          </div>
+          <label class="search-box"><span aria-hidden="true">&#9906;</span><input id="search" type="search" placeholder="搜索网页、分组或网址" /></label>
+        </section>
+
+        <section class="dock-layout">
+          <div class="dock-stage">
+            <div class="stage-heading">
+              <div><p class="eyebrow">YOUR PLACES</p><h2 id="stage-title">今天的网页</h2></div>
+              <p class="drag-hint" id="drag-hint"><span aria-hidden="true">&#10231;</span>拖动图标到分组或 Stack</p>
+            </div>
+            <div class="dock-columns" id="dock-columns"></div>
+            <div class="stack-tray" id="stack-tray" hidden aria-live="polite"></div>
+            <p class="empty-state" id="empty-state" hidden>还没有网页。通过扩展图标收集当前网页，或手动添加一个网址。</p>
+          </div>
+
+          <aside class="insights-panel" aria-label="网页使用情况">
+            <div class="insight-heading"><p class="eyebrow">AT A GLANCE</p><h2>使用情况</h2></div>
+            <dl class="metrics">
+              <div><dt>本周最常用</dt><dd id="most-used">—</dd><small id="most-used-name">尚无使用记录</small></div>
+              <div><dt>专注时长</dt><dd id="focus-time">0<span>h 0m</span></dd><small id="focus-detail">将在产生使用记录后显示</small></div>
+            </dl>
+            <div class="selected-site" id="selected-site" aria-live="polite"></div>
+            <div class="inbox-actions" id="inbox-actions" hidden></div>
+            <div class="tidy-note"><span class="spark">✦</span><div><strong>整理一下</strong><p id="tidy-copy">有 4 个网页已经超过 30 天未打开。</p><button type="button" id="show-quiet">查看待整理</button></div></div>
+          </aside>
+        </section>
+        <section class="timeline-view" id="timeline-view" hidden aria-labelledby="timeline-title">
+          <div class="timeline-heading"><div><p class="eyebrow">BROWSE BACK</p><h2 id="timeline-title">今天的浏览轨迹</h2></div><p>按时段回到当时的工作上下文</p></div>
+          <div class="timeline-track" id="timeline-track"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="site-dialog" id="site-dialog" aria-labelledby="dialog-title">
+      <form method="dialog" id="site-form">
+        <div class="dialog-heading"><div><p class="eyebrow">NEW PLACE</p><h2 id="dialog-title">把网页放进 Dock</h2></div><button type="button" class="icon-button" id="close-dialog" aria-label="关闭">×</button></div>
+        <label>网页名称<input required name="label" maxlength="24" placeholder="例如：Linear" /></label>
+        <label>网址<input required name="host" maxlength="64" placeholder="linear.app" /></label>
+        <label>放入分组<select required name="group" id="group-select"></select></label>
+        <div class="dialog-actions"><button type="button" class="secondary-button" id="cancel-dialog">取消</button><button type="submit" class="primary-button">添加网页 <span>+</span></button></div>
+      </form>
+    </dialog>
+    <dialog class="site-dialog" id="group-dialog" aria-labelledby="group-dialog-title">
+      <form id="group-form">
+        <div class="dialog-heading"><div><p class="eyebrow">NEW GROUP</p><h2 id="group-dialog-title">新建分组</h2></div><button type="button" class="icon-button" id="close-group-dialog" aria-label="关闭">×</button></div>
+        <label>分组名称<input required name="title" maxlength="12" placeholder="例如：客户项目" /></label>
+        <fieldset class="group-color-field"><legend>分组颜色</legend><div class="group-colors">
+          <label><input type="radio" name="color" value="#3478f6" checked /><span class="group-swatch is-blue" aria-label="蓝色"></span></label>
+          <label><input type="radio" name="color" value="#885cf6" /><span class="group-swatch is-purple" aria-label="紫色"></span></label>
+          <label><input type="radio" name="color" value="#e06f43" /><span class="group-swatch is-orange" aria-label="橙色"></span></label>
+          <label><input type="radio" name="color" value="#1aa576" /><span class="group-swatch is-green" aria-label="绿色"></span></label>
+        </div></fieldset>
+        <div class="dialog-actions"><button type="button" class="secondary-button" id="cancel-group-dialog">取消</button><button type="submit" class="primary-button">创建分组 <span>+</span></button></div>
+      </form>
+    </dialog>
+    <dialog class="site-dialog" id="workspace-name-dialog" aria-labelledby="workspace-name-dialog-title">
+      <form id="workspace-name-form">
+        <div class="dialog-heading"><div><p class="eyebrow">WORKSPACE NAME</p><h2 id="workspace-name-dialog-title">工作台名称</h2></div><button type="button" class="icon-button" id="close-workspace-name-dialog" aria-label="关闭">×</button></div>
+        <label>名称<input required name="workspaceName" maxlength="32" placeholder="例如：我的网页工作空间" /></label>
+        <div class="dialog-actions"><button type="button" class="secondary-button" id="cancel-workspace-name-dialog">取消</button><button type="submit" class="primary-button">保存名称</button></div>
+      </form>
+    </dialog>
+    <dialog class="command-dialog" id="command-dialog" aria-label="命令面板">
+      <div class="command-shell">
+        <div class="command-input-row"><span aria-hidden="true">&#9906;</span><input id="command-input" type="search" placeholder="搜索网页或任务空间" aria-label="搜索网页或任务空间" /><kbd>ESC</kbd></div>
+        <div class="command-results" id="command-results" aria-live="polite"></div>
+        <p class="command-footer"><span>↵ 打开</span><span>⌘ K 随时搜索</span></p>
+      </div>
+    </dialog>
+    <dialog class="site-dialog background-dialog" id="background-dialog" aria-labelledby="background-dialog-title">
+      <div class="background-dialog-content">
+        <div class="dialog-heading"><div><p class="eyebrow">WORKSPACE BACKGROUND</p><h2 id="background-dialog-title">工作台背景</h2></div><button type="button" class="icon-button" id="close-background-dialog" aria-label="关闭">×</button></div>
+        <div class="background-preview" id="background-preview"><span id="background-preview-label">未设置图片</span></div>
+        <label class="upload-field">上传图片<input id="background-file" type="file" accept="image/png,image/jpeg,image/webp" /><span>选择图片</span></label>
+        <label class="background-range">显示强度 <span id="background-opacity-value">56%</span><input id="background-opacity" type="range" min="18" max="82" value="56" /></label>
+        <div class="dialog-actions"><button type="button" class="secondary-button" id="clear-background">移除背景</button><button type="button" class="primary-button" id="done-background">完成</button></div>
+        <p class="background-status" id="background-status" aria-live="polite"></p>
+      </div>
+    </dialog>
+    <script src="./app.js?v=20260828-1"></script>
+  </body>
+</html>

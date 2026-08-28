@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VISTA</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header><span class="mark">V</span><strong>VISTA</strong><span class="eyebrow">INBOX</span></header>
+      <p id="page-title" class="page-title">正在识别当前网页</p>
+      <p id="page-host" class="page-host"></p>
+      <button id="collect-page" type="button">收集到收件箱 <span>+</span></button>
+      <button id="open-dock" class="secondary" type="button">打开网页工作台</button>
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+    <script src="./popup.js"></script>
+  </body>
+</html>

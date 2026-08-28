@@ -1,0 +1,15 @@
+:root { color: #343840; font-family: "Avenir Next", "PingFang SC", sans-serif; }
+* { box-sizing: border-box; }
+body { width: 292px; margin: 0; background: #f7f8fa; }
+.popup-shell { display: grid; gap: 10px; padding: 16px; }
+header { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+.mark { display: grid; width: 19px; height: 19px; place-items: center; color: #fff; background: #3478f6; font-size: 10px; font-weight: 800; }
+.eyebrow { margin-left: auto; color: #969da8; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
+.page-title { display: -webkit-box; min-height: 34px; margin: 5px 0 0; overflow: hidden; color: #3d434d; font-size: 12px; font-weight: 650; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.page-host { margin: -7px 0 3px; overflow: hidden; color: #858c97; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+button { min-height: 34px; border: 1px solid transparent; border-radius: 4px; color: #fff; background: #3478f6; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+button:hover { background: #2364d9; }
+button span { font-size: 15px; font-weight: 400; }
+button.secondary { color: #59616c; border-color: #d9dde5; background: #fff; }
+button.secondary:hover { color: #3469c8; border-color: #b9cef7; background: #f8fbff; }
+.status { min-height: 13px; margin: 0; color: #7a828d; font-size: 10px; text-align: center; }

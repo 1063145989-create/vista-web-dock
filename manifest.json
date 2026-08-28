@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "VISTA Web Dock",
+  "version": "0.1.0",
+  "description": "把网页、书签和浏览上下文整理成可拖拽的个人工作台。",
+  "icons": {
+    "128": "icons/vista-128.png"
+  },
+  "permissions": ["storage", "bookmarks", "tabs", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "收集到 VISTA",
+    "default_popup": "popup.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data:"
+  }
+}
