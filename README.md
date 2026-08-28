@@ -1,21 +1,82 @@
-# VISTA Web Dock Extension
+# VISTA - 我的网页工作空间
 
-Chrome / Edge Manifest V3 extension that makes the VISTA workspace the browser new-tab page.
+> 把电脑上的常用网页，整理成像手机 App 桌面一样直观、好找、可持续使用的工作空间。
 
-## Load locally
+手机上，我们习惯用 App 图标组织生活和工作；但在电脑上，常用工具大多是网页，最后往往散落在标签页、历史记录和层层收藏夹中。收藏夹保存了链接，却很难保存“我当时为什么要打开它”的工作上下文。
 
-1. Open `chrome://extensions` in Chrome, or `edge://extensions` in Edge.
-2. Enable Developer mode.
-3. Select Load unpacked and choose this `web-dock` folder.
-4. Open a new tab to use VISTA as the workspace.
+VISTA 是一个 Chrome / Edge 扩展。安装后，每次打开新标签页都会进入自己的网页工作空间：把常用网页收进 Dock，按任务分组，手动拖拽整理，在需要时快速回到那一组工作。
 
-## Included
+## 它适合谁
 
-- New-tab workspace: the existing Dock, groups, search, timeline, Stack, background, and flow field.
-- Toolbar popup: collect the active HTTP(S) page into the inbox and open the workspace.
-- Bookmark import: available only within the installed extension.
-- Local-first data: workspace data is held in `chrome.storage.local`; no backend or account is required.
+- 经常在多个网页工具之间切换的知识工作者、设计师、研究者和产品团队成员
+- 收藏夹很多，但真正需要时总找不到网页的人
+- 希望把常用网页按项目、任务或工作习惯整理，而不是只按浏览器文件夹归档的人
 
-## Privacy
+## 核心体验
 
-The service worker increments a visit count only for sites already collected in VISTA. It does not transmit browsing data and does not record pages that have not been collected.
+### 像整理手机桌面一样整理网页
+
+- 导入浏览器书签，并保留原有文件夹结构作为分组起点
+- 创建自己的任务分组，拖拽网页图标调整位置或移动分组
+- 进入“整理”模式后，将一个图标拖到另一个图标上，创建 **Stack**
+- Stack 可以展开、命名或拆开，让同一任务的网页形成一组，而不是彼此孤立
+
+### 先收集，再决定放在哪里
+
+- 通过浏览器工具栏的 VISTA 按钮，将当前网页收集到“收件箱”
+- 收件箱中的网页可以稍后归类、删除，或放进具体任务空间
+- 已收集的网页支持修改名称、网址和所属分组
+
+### 在需要时更快回到工作
+
+- 搜索网页和分组，或使用 `Cmd/Ctrl + K` 打开命令面板
+- 使用“专注”视图快速收缩图标密度，减少视觉干扰
+- “继续上次工作”和“时间轴”仅在真实使用后出现，帮助回到之前的工作上下文
+
+### 让工作台属于自己
+
+- 自定义工作台名称
+- 上传自己的背景图片、调节显示强度，或一键移除
+- 开启或关闭流态粒子背景
+
+## 数据如何产生
+
+VISTA 不预置虚构的浏览次数、停留时长或时间轴。只有在用户实际收集、打开和使用网页之后，相关状态才会逐步出现。
+
+- 收集网页或打开已收集网页时，会记录一次真实活动
+- 同一网页在 45 秒内重复打开不会重复计数
+- 停留时长在页面停留满 1 分钟，并切换或关闭标签页时结算
+- “继续上次工作”“本周浏览”“时间轴”都基于这些真实活动生成
+
+## 隐私与数据
+
+VISTA 采用本地优先设计：分组、网页、排序、Stack、背景和使用数据默认保存在浏览器本机的 `chrome.storage.local` 中。
+
+- 不需要账号，不依赖后端服务
+- 不上传或出售浏览记录
+- 仅对已经收集到 VISTA 的网页记录使用活动；未收集的网页不会被记录
+
+## 安装测试版
+
+目前支持 **Chrome** 和 **Microsoft Edge**，适用于 macOS 与 Windows。
+
+1. 在 GitHub 页面点击绿色 `Code` 按钮，选择 `Download ZIP`。
+2. 解压下载文件。
+3. Chrome 打开 `chrome://extensions`，或 Edge 打开 `edge://extensions`。
+4. 开启右上角的“开发人员模式”。
+5. 点击“加载已解压的扩展”。
+6. 选择解压后、包含 `manifest.json` 的文件夹。
+7. 打开一个新标签页，开始使用 VISTA。
+
+安装后，浏览器书签栏会出现“VISTA 工作台”入口，方便从任意页面返回工作台。
+
+## 开发说明
+
+这是一个 Manifest V3 浏览器扩展：
+
+- `index.html` / `app.js` / `style.css`：新标签页工作台
+- `popup.html` / `popup.js`：收集当前网页的工具栏弹窗
+- `background.js`：网页收集、活动记录、停留时长与书签栏入口
+- `manifest.json`：扩展权限与新标签页覆盖配置
+
+无需构建步骤。修改源码后，在 `chrome://extensions` 或 `edge://extensions` 中点击 VISTA 卡片上的刷新按钮即可。
